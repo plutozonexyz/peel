@@ -118,6 +118,33 @@ def keygen():
         os.rename('./keys/mine/public.key' './keys/mine/public'+date.today()+'.key')
     open('./keys/mine/private.key').write(bytes(key))
     open('./keys/mine/public.key').write(bytes(key.pubkey))
-    print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!")
+    print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!\nNOTE: On your first key creation, you must contact the server admin to manually publish your key.")
 
+
+def keypub(passphrase):
+    print("Publishing Keys...")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((HOST, 293))
+    msg = "KEYPUB "+USRNM, 
+    msghead = len(msg)
+    sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+    recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
+    recvmsg = sock.recv(recvhead).decode("UTF-8")
+    recvmsgf = recvmsg.split(' ')
+    if recvmsgf[0] == "VERIFY":
+        with key.unlock(passphrase):
+            sig = key.sign(recvmsgf[1])
+        msg = "VERIFY "+sig 
+        msghead = len(msg)
+        sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+        recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
+        recvmsg = sock.recv(recvhead).decode("UTF-8")
+        recvmsgf = recvmsg.split(' ')
+        if recvmsgf[0] == "OK":
+            msg = open('./keys/mine/public.key').read() 
+            msghead = len(msg)
+            sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+            print("Keys published!")
+    else:
+        print("ERROR")
 
