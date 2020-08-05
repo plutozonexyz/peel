@@ -5,6 +5,7 @@ import os
 import tarfile
 import hashlib
 from datetime import timedelta
+from datetime import date
 from pgpy.constants import PubKeyAlgorithm, KeyFlags, HashAlgorithm, SymmetricKeyAlgorithm, CompressionAlgorithm
 from conf import *
 
@@ -108,5 +109,13 @@ def keygen():
         ciphers=[SymmetricKeyAlgorithm.AES256, SymmetricKeyAlgorithm.AES192, SymmetricKeyAlgorithm.AES128],
         compression=[CompressionAlgorithm.ZLIB, CompressionAlgorithm.BZ2, CompressionAlgorithm.ZIP, CompressionAlgorithm.Uncompressed],
         key_expired=timedelta(days=32))
+    key.protect(input("Password for new private key: "))
+    if os.path.exists('./keys/mine/private.key'):
+        os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
+    if os.path.exists('./keys/mine/public.key'):
+        os.rename('./keys/mine/public.key' './keys/mine/public'+date.today()+'.key')
+    open('./keys/mine/private.key').write(bytes(key))
+    open('./keys/mine/public.key').write(bytes(key.pubkey))
+    print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!")
 
-    key.
+
