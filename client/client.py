@@ -27,9 +27,9 @@ def firsttime():
     os.mkdir('./tx/dec')
     print("Directories created!")
 
-def fetch_msgs(host, passphrase):
+def fetch_msgs(passphrase):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, 293))
+    sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     key.unlock(passphrase)
     msg = "FETCH "+USRNM, key.sign("MSGS"))
