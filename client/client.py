@@ -123,7 +123,7 @@ def keygen():
 
 def keypub(passphrase):
     print("Publishing Keys...")
-    key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
+    key,_ = pgpy.PGPKey.from_file('./keys/mine/private'+date.today()+'.key')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, 293))
     msg = "KEYPUB "+USRNM, 
