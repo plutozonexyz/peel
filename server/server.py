@@ -7,13 +7,11 @@ import select
 CCOMMPORT = 293
 HEADSIZE = 20
 
-servsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-servsock.bind(('', CCOMMPORT))
-servsock.listen()
-print(f'listening on *:{CCOMMPORT}'))
+serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversock.bind(('', CCOMMPORT))
+serversock.listen()
+print(f'listening on *:{CCOMMPORT}')
 serversock.setblocking(False)
-
-sel.register(serversock, selectors.EVENT_READ, accept)
 
 
 # while True:
@@ -25,7 +23,9 @@ sel.register(serversock, selectors.EVENT_READ, accept)
 
 # clientsocket, address = servsock.accept()
 
-sockets_list = ''
+sockets_list = [serversock]
+clients = {}
+
 
 def recv_msg(client_socket):
     try:
@@ -41,7 +41,7 @@ while True:
     read_sockets, _, exception_sock = select.select(sockets_list, [], sockets_list)
     
     for notified_socket in read_sockets:
-        if notified_socket == server_socket:
+        if notified_socket == serversock:
             client_socket, client_address = serversock.accept()
             user = recv_msg(client_socket)
             if user is False:
