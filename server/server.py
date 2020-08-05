@@ -23,9 +23,6 @@ serversock.setblocking(False)
 
 # clientsocket, address = servsock.accept()
 
-sockets_list = [serversock]
-clients = {}
-
 
 def recv_msg(client_socket):
     try:
@@ -38,15 +35,7 @@ def recv_msg(client_socket):
         return False
 
 while True:
-    read_sockets, _, exception_sock = select.select(sockets_list, [], sockets_list)
-    
-    for notified_socket in read_sockets:
-        if notified_socket == serversock:
-            client_socket, client_address = serversock.accept()
-            user = recv_msg(client_socket)
-            if user is False:
-                continue
-            sockets_list.append(client_socket)
-            clients[client_socket] = user
-            print(f"connection {client_address[0]}:{client_address[1]} established")
-            
+    def conn_listen():
+        client_socket, client_address = serversock.accept()
+        print(f"connection {client_address[0]}:{client_address[1]} established")
+
