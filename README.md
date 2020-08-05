@@ -11,6 +11,7 @@ I decided that I wanted to make a more secure version of e-mail, using PGP as a 
 
 ## Installation instructions?
 Use the Releases tab. If there are none, please wait until PEEL is stable enough for a release to be put up.
+
 Dependencies are:
 - Python 3.7
 - Pip
