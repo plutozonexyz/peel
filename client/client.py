@@ -35,8 +35,9 @@ def fetch_msgs(passphrase):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
-    key.unlock(passphrase)
-    msg = "FETCH "+USRNM, key.sign("MSGS")
+    with key.unlock(passphrase):
+        sig = key.sign("MSGS")
+    msg = "FETCH "+USRNM, sig
     msghead = len(msg)
     sock.send(f"{msghead:<{HEADSIZE}}{msg}")
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
@@ -79,14 +80,15 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
-    key.unlock(passphrase)
+    with key.unlock(passphrase):
+        sig = key.sign(to_addr)
     msg = "GETKEY "+to_addr
     msghead = len(msg)
     sock.send(f"{msghead:<{HEADSIZE}}{msg}")
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     pubkey_rec = pgpy.PGPKey()
     pubkey_rec.parse(sock.recv(recvhead))
-    msg = "SEND "+USRNM, key.sign(to_addr)
+    msg = "SEND "+USRNM, sig
     msghead = len(msg)
     sock.send(f"{msghead:<{HEADSIZE}}{msg}")
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
@@ -109,7 +111,7 @@ def keygen():
         ciphers=[SymmetricKeyAlgorithm.AES256, SymmetricKeyAlgorithm.AES192, SymmetricKeyAlgorithm.AES128],
         compression=[CompressionAlgorithm.ZLIB, CompressionAlgorithm.BZ2, CompressionAlgorithm.ZIP, CompressionAlgorithm.Uncompressed],
         key_expired=timedelta(days=32))
-    key.protect(input("Password for new private key: "))
+    key.protect(input("Password for new private key: "), SymmetricKeyAlgorithm, HashAlgorithm)
     if os.path.exists('./keys/mine/private.key'):
         os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
     if os.path.exists('./keys/mine/public.key'):
