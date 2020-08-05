@@ -38,14 +38,15 @@ def fetch_msgs(passphrase):
     sock.send(f"{msghead:<{HEADSIZE}}{msg}")
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     recvmsg = sock.recv(recvhead).decode("UTF-8")
-    if 'ERROR' in recvmsg[HEADER:]:
-        if recvmsg[-HEADER:] == '1':
+    recvmsgf = recvmsg.split(' ')
+    if 'ERROR' in recvmsgf[0]:
+        if recvmsgf[1] == '1':
             print(f"No messages avalible for {USRNM}.")
         else:
-            print(f"Got error code {recvmsg[-HEADER:]}.")
-    elif 'RECVMSG' in recvmsg[HEADER:]:
-        print(f"You have {recvmsg[-HEADER:]} new message(s)!")
-        for i in range(int(recvmsg[-HEADER:])):
+            print(f"Got error code {recvmsg[1]}.")
+    elif 'RECVMSG' in recvmsgf[0]:
+        print(f"You have {recvmsgf[1]} new message(s)!")
+        for i in range(int(recvmsgf[1])):
             recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
             recvfilenm = sock.recv(FILENMSIZE).decode("UTF-8").strip([' ', '\n'])
             os.write('./rx/enc/'+recvfilenm+'.tar.pgp', sock.recv(recvhead))
@@ -54,11 +55,11 @@ def fetch_msgs(passphrase):
 
 def compose_msg(body_file, attachment, to_addr, subject, passphrase):
     shatar = hashlib.sha256(subject).hexdigest()
-    tarfile.open('./tx/dec/'+shatar+'.tar', x)
-    tf = tarfile.open('./tx/dec/'+shatar+'.tar', w)
+    tarfile.open('./tx/dec/'+shatar+'.tar', 'x')
+    tf = tarfile.open('./tx/dec/'+shatar+'.tar', 'w')
     for i in range(len(attachment)):
         tf.addfile(attachment[i])
-        
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
