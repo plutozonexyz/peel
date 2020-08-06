@@ -69,19 +69,18 @@ def fetch_msgs(passphrase):
 def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     shatar = hashlib.sha256(subject).hexdigest()
     f = open(body_file, 'r')
-    f2 = open('./tx/dec/'+shatar+'/msg.txt', 'w')
+    f2 = open('./tx/dec/'+shatar+'/msg.txt', 'w+')
     f2.write("SUBJECT: "+subject+"\nFROM: "+USRNM+"@"+HOST+"\nTO: "+to_addr+"\n\n\n"+f.read())
     f2.close()
     f.close()
-
-    tarfile.open('./tx/dec/'+shatar+'.tar', 'x')
+#    tarfile.open('./tx/dec/'+shatar+'.tar', 'x')
     os.mkdir('./tx/dec/'+shatar)
     tf = tarfile.open('./tx/dec/'+shatar+'.tar', 'w')
     if len(attachment) > 0:
         os.mkdir('./tx/dec/'+shatar+'/attach')
         for i in range(len(attachment)):
             fname = attachment[i].split("/").split("\\")
-            att_file = open(attachment[i]); att_dest_file = open('./tx/dec/'+shatar+'/attach/'+fname)
+            att_file = open(attachment[i], 'r'); att_dest_file = open('./tx/dec/'+shatar+'/attach/'+fname, 'w+')
             att_dest_file.write(att_file.read())
             att_dest_file.close(); att_file.close()
         tf.addfile('./tx/dec/'+shatar+'/attach')
@@ -128,8 +127,8 @@ def keygen():
         os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
     if os.path.exists('./keys/mine/public.key'):
         os.rename('./keys/mine/public.key' './keys/mine/public'+date.today()+'.key')
-    open('./keys/mine/private.key').write(bytes(key))
-    open('./keys/mine/public.key').write(bytes(key.pubkey))
+    open('./keys/mine/private.key', 'w+').write(bytes(key))
+    open('./keys/mine/public.key', 'w+').write(bytes(key.pubkey))
     print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!\nNOTE: On your first key creation, you must contact the server admin to manually publish your key.")
 
 
@@ -155,7 +154,7 @@ def keypub(passphrase):
         recvmsg = sock.recv(recvhead).decode("UTF-8")
         recvmsgf = recvmsg.split(' ')
         if recvmsgf[0] == "OK":
-            msg = open('./keys/mine/public.key').read() 
+            msg = open('./keys/mine/public.key', 'r').read() 
             msghead = len(msg)
             sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
             sock.send(msg)

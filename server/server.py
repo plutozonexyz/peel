@@ -85,7 +85,7 @@ while True:
                     send_msg(client_socket, "RECVMSG "+num)
                     for i in num:
                         f = dirlist[i]
-                        fr = open(f).read()
+                        fr = open(f, 'r').read()
                         msgf = f'{len(fr):<{HEADSIZE}}{f:<{FILENMSIZE}}'
                         client_socket.send(msgf, "UTF-8")
                         client_socket.send(fr)
@@ -101,7 +101,7 @@ while True:
                     if key.verify(dd, sig):
                         send_msg(client_socket, 'OK')
                         kf = recv_msg(client_socket)
-                        open('./pubkeys/'+recvd[1]).write(kf)
+                        open('./pubkeys/'+recvd[1], 'w+').write(kf)
                     else:
                         send_msg(client_socket, 'ERROR SIG_INVALID')
                 except:
@@ -110,7 +110,7 @@ while True:
             if recvd[1] in os.listdir('./pubkeys'):
                 send_msg(client_socket, 'OK')
                 f = './pubkeys/'
-                fr = open(f).read()
+                fr = open(f, 'r').read()
                 msgf = f'{len(fr):<{HEADSIZE}}}'
                 client_socket.send(msgf, "UTF-8")
                 client_socket.send(fr)
@@ -119,7 +119,7 @@ while True:
                     send_msg(client_socket, 'OK')
                     shatar = recv_msg(client_socket)
                     f3 = recv_file(client_socket)
-                    open(f'./msgs/{recvd_two[0]}/{shatar}').write(f3)
+                    open(f'./msgs/{recvd_two[0]}/{shatar}', 'w+').write(f3)
                 else:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
