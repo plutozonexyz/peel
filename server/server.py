@@ -41,7 +41,7 @@ def recv_msg(client_socket):
 def send_msg(client_socket, msg):
     try:
         msgf = f'{len(msg):<{HEADSIZE}}'+msg
-        serversock.send(msgf, "UTF-8")
+        serversock.send(bytes(msgf, "UTF-8"))
     except:
         return False
 
@@ -59,8 +59,8 @@ def send_file(client_socket, file):
         # msgf = f'{len(file):<{HEADSIZE}}'+msg
         # serversock.send(msgf, "UTF-8")
         msghead = len(bytes(file))
-        serversock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
-        serversock.send(file)
+        serversock.send(bytes(f"{msghead:<{HEADSIZE}}", "UTF-8"))
+        serversock.send(bytes(file))
     except:
         return False
 
@@ -87,20 +87,20 @@ while True:
                         f = dirlist[i]
                         fr = open(f, 'r').read()
                         msgf = f'{len(fr):<{HEADSIZE}}{f:<{FILENMSIZE}}'
-                        client_socket.send(msgf, "UTF-8")
-                        client_socket.send(fr)
+                        client_socket.send(bytes(msgf, "UTF-8"))
+                        client_socket.send(bytes(fr, "UTF-8"))
         elif recvd[0] == 'KEYPUB':
             if recvd[1] in os.listdir('./pubkeys'):
                 dd = date.today()
                 send_msg(client_socket, "VERIFY "+dd)
                 msg_head = int(client_socket.recv(HEADSIZE).decode("UTF-8"))
-                sig = client_socket.recv(HEADSIZE)
+                sig = client_socket.recv(HEADSIZE).decode("UTF-8")
                 key,_ = pgpy.PGPKey.from_file('./pubkeys/'+recvd[1])
                 
                 try:
                     if key.verify(dd, sig):
                         send_msg(client_socket, 'OK')
-                        kf = recv_msg(client_socket)
+                        kf = recv_msg(client_socket).decode("UTF-8")
                         open('./pubkeys/'+recvd[1], 'w+').write(kf)
                     else:
                         send_msg(client_socket, 'ERROR SIG_INVALID')
@@ -112,13 +112,13 @@ while True:
                 f = './pubkeys/'
                 fr = open(f, 'r').read()
                 msgf = f'{len(fr):<{HEADSIZE}}}'
-                client_socket.send(msgf, "UTF-8")
-                client_socket.send(fr)
+                client_socket.send(bytes(msgf, "UTF-8"))
+                client_socket.send(bytes(fr, UTF-8))
                 recvd_two = recv_msg(client_socket).split(' ')
                 if recvd_two[0] in os.listdir('./pubkeys'):
                     send_msg(client_socket, 'OK')
                     shatar = recv_msg(client_socket)
-                    f3 = recv_file(client_socket)
+                    f3 = recv_file(client_socket).decode("UTF-8")
                     open(f'./msgs/{recvd_two[0]}/{shatar}', 'w+').write(f3)
                 else:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
