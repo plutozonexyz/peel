@@ -145,17 +145,18 @@ def keypub(passphrase):
     recvmsgf = recvmsg.split(' ')
     if recvmsgf[0] == "VERIFY":
         with key.unlock(passphrase):
-            sig = key.sign(recvmsgf[1])
-        msg = "VERIFY "+sig 
-        msghead = len(msg)
-        sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+            sig = key.sign(recvmsgf[1]) 
+        msghead = len(sig)
+        sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+        sock.send(sig)
         recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
         recvmsg = sock.recv(recvhead).decode("UTF-8")
         recvmsgf = recvmsg.split(' ')
         if recvmsgf[0] == "OK":
             msg = open('./keys/mine/public.key').read() 
             msghead = len(msg)
-            sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+            sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+            sock.send(msg)
             print("Keys published!")
     else:
         print("ERROR")
