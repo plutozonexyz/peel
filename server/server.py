@@ -1,12 +1,16 @@
 import socket
 import pgpy
 import threading
-
+import ssl
+import os
 
 CCOMMPORT = 293
 HEADSIZE = 100
+cert_location = './ssl/cert.pem'
+key_location = './ssl/key.pem'
 
-serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversock = ssl.wrap_socket(sock, certfile=cert_location, keyfile=key_location, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
 serversock.bind(('', CCOMMPORT))
 serversock.listen()
 print(f'listening on *:{CCOMMPORT}')
@@ -25,11 +29,10 @@ serversock.setblocking(False)
 
 def recv_msg(client_socket):
     try:
-        msg_head = client_socket.recv(HEADSIZE)
+        msg_head = int(client_socket.recv(HEADSIZE).decode("UTF-8"))
         if not len(msg_head):
             return False
-        MSGSIZE = int(msg_head.decode("UTF-8"))
-        return {"header": msg_head, "data": client_socket.recv(MSGSIZE)}
+        return client_socket.recv(MSGSIZE)
     except:
         return False
 
@@ -37,4 +40,5 @@ while True:
     def conn_listen():
         client_socket, client_address = serversock.accept()
         print(f"connection {client_address[0]}:{client_address[1]} established")
-        
+        recvd = recv_msg(client_socket).split(' ')
+        if recvd[0] = 'FETCH'

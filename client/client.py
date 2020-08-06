@@ -4,6 +4,7 @@ import sys
 import os
 import tarfile
 import hashlib
+import ssl
 from datetime import timedelta
 from datetime import date
 from pgpy.constants import PubKeyAlgorithm, KeyFlags, HashAlgorithm, SymmetricKeyAlgorithm, CompressionAlgorithm
@@ -32,7 +33,8 @@ def init():
     print("Directories created!")
 
 def fetch_msgs(passphrase):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
     sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     with key.unlock(passphrase):
@@ -77,7 +79,8 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
             att_dest_file.close(); att_file.close()
         tf.addfile('./tx/dec/'+shatar+'/attach')
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
     sock.connect((HOST, 293))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     with key.unlock(passphrase):
@@ -124,7 +127,8 @@ def keygen():
 def keypub(passphrase):
     print("Publishing Keys...")
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private'+date.today()+'.key')
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
     sock.connect((HOST, 293))
     msg = "KEYPUB "+USRNM, 
     msghead = len(msg)
