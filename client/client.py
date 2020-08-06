@@ -124,9 +124,9 @@ def keygen():
         key_expired=timedelta(days=32))
     key.protect(input("Password for new private key: "), SymmetricKeyAlgorithm.AES128, HashAlgorithm.SHA256)
     if os.path.exists('./keys/mine/private.key'):
-        os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
+        os.rename('./keys/mine/private.key' './keys/mine/private'+str(date.today())+'.key')
     if os.path.exists('./keys/mine/public.key'):
-        os.rename('./keys/mine/public.key' './keys/mine/public'+date.today()+'.key')
+        os.rename('./keys/mine/public.key' './keys/mine/public'+str(date.today())+'.key')
     open('./keys/mine/private.key', 'w+').write(str(key))
     open('./keys/mine/public.key', 'w+').write(str(key.pubkey))
     print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!\nNOTE: On your first key creation, you must contact the server admin to manually publish your key.")
