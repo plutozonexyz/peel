@@ -1,11 +1,10 @@
 import socket
 import pgpy
 import threading
-import select
 
 
 CCOMMPORT = 293
-HEADSIZE = 20
+HEADSIZE = 100
 
 serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversock.bind(('', CCOMMPORT))

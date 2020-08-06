@@ -9,7 +9,7 @@ from datetime import date
 from pgpy.constants import PubKeyAlgorithm, KeyFlags, HashAlgorithm, SymmetricKeyAlgorithm, CompressionAlgorithm
 from conf import *
 
-HEADSIZE = 20
+HEADSIZE = 100
 FILENMSIZE = 150
 
 def decrypt_tar(enfile, passphrase):
