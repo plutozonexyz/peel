@@ -61,7 +61,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     shatar = hashlib.sha256(subject).hexdigest()
     f = open(body_file, 'r')
     f2 = open('./tx/dec/'+shatar+'/msg.txt', 'w')
-    f2.write("SUBJECT: "+subject+"\n\n"+f.read())
+    f2.write("SUBJECT: "+subject+"\nFROM: "+USRNM+"\nTO: "+to_addr+"\n\n\n"+f.read())
     f2.close()
     f.close()
 
@@ -72,7 +72,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
         os.mkdir('./tx/dec/'+shatar+'/attach')
         for i in range(len(attachment)):
             fname = attachment[i].split("/").split("\\")
-            att_file = open(attachment); att_dest_file = open('./tx/dec/'+shatar+'/'+fname)
+            att_file = open(attachment[i]); att_dest_file = open('./tx/dec/'+shatar+'/attach/'+fname)
             att_dest_file.write(att_file.read())
             att_dest_file.close(); att_file.close()
         tf.addfile('./tx/dec/'+shatar+'/attach')
@@ -148,4 +148,56 @@ def keypub(passphrase):
             print("Keys published!")
     else:
         print("ERROR")
+
+
+if len(sys.argv) == 1:
+    print("Type the command 'HELP' for a list of commands.")
+elif sys.argv[1].lowercase() == "help":
+    if len(sys.argv) == 2:
+        print(f'''Type 'help [command]' for a list of arugments and what they can do.
+NOTE: For all commands to work you MUST be in the same directory as the client script. Run 'dir' or 'ls' to check this in your system shell.
+NOTE 2: PLEASE fill out the included config.py with the variables included. Most stuff won't work without it.
+COMMAND LIST:
+{'HELP':<10}Displays help.
+{'INIT':<10}Creates the initial directories.
+{'FETCH':<10}Retrieves new messages off the server. They are also deleted off the server once fetched.
+{'COMPOSE':<10}Writes a new message and sends it.
+{'KEYGEN':<10}Generates a new key pair. Reccomended to do this 2 days before your old keys expire, as your old keys will verify with the server that you are yourself.
+{'KEYPUB':<10}Run this on the same day that you generated the keys. If the day changes, you will have to manually use your old keys somehow to tell the server that you are yourself.
+{'DECRYPT':<10}Run this along with the filename of the .tar.pgp message archive you wish to decrypt. Do not include the file extension(s).''')
+    elif len(sys.argv) == 3:
+        helpsub = sys.argv[2].lowercase()
+        if helpsub == 'help'
+            print('''SYNTAX:
+HELP 
+    [COMMAND] Another command in the script that can be called. This is for explaining it.''')
+        elif helpsub == 'init':
+            print('''SYNTAX:
+INIT''')
+        elif helpsub == 'fetch':
+            print('''SYNTAX:
+FETCH''')
+        elif helpsub == 'compose':
+            print('''SYNTAX:
+COMPOSE
+    <BODY FILE> Location of the .txt file containing the body of the message; in quotes.
+    <TO ADDR> Recipient's address; in quotes. typically in the format of '{user.name}@{domain.net}'
+    <SUBJECT> Subject line; in quotes.
+    [ATTACHMENT 1] Full system path to the attachment; in quotes.
+    [ATTACHMENT 2] See above.
+    [ATTACHMENT etc...]''')
+        elif helpsub == 'keygen':
+            print('''SYNTAX:
+KEYGEN''')
+        elif helpsub == 'keypub':
+            print('''SYNTAX:
+KEYPUB''')
+        elif helpsub == 'decrypt':
+            print('''SYNTAX:
+DECRYPT
+    <NAME> Filename of message archive needed to be decrpyted. Do not include extensions.''')
+        else:
+            print("That command does not exist.")
+    else:
+        print("I don't understand.")
 
