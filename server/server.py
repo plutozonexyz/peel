@@ -5,7 +5,7 @@ import ssl
 import os
 from datetime import date
 
-CCOMMPORT = 293
+CCOMMPORT = 2930
 HEADSIZE = 100
 FILENMSIZE = 150
 cert_location = './ssl/cert.pem'

@@ -40,7 +40,7 @@ def init():
 def fetch_msgs(passphrase):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
-    sock.connect((HOST, 293))
+    sock.connect((HOST, 2930))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     with key.unlock(passphrase):
         sig = key.sign("MSGS")
@@ -87,7 +87,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
-    sock.connect((HOST, 293))
+    sock.connect((HOST, 2930))
     msg = "GETKEY "+to_addr
     msghead = len(msg)
     sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}"))
@@ -137,7 +137,7 @@ def keypub(passphrase):
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private'+date.today()+'.key')
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
-    sock.connect((HOST, 293))
+    sock.connect((HOST, 2930))
     msg = "KEYPUB "+USRNM, 
     msghead = len(msg)
     sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}"))
