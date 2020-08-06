@@ -27,7 +27,7 @@ elif sys.argv[1].upper() == 'ADDUSR':
         if ' ' in usrname:
             print("No spaces allowed inside usernames!")
         else:
-            open('./pubkeys/'+usrname, 'w+').write(bytes(key))
+            open('./pubkeys/'+usrname, 'w+').write(str(key))
             os.mkdir('./msgs/'+usrname)
             print("Added user!")
     else:
