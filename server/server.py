@@ -50,7 +50,7 @@ def recv_file(client_socket):
         msg_head = int(client_socket.recv(HEADSIZE).decode("UTF-8"))
         if not len(msg_head):
             return False
-        return client_socket.recv(msg_head)
+        return client_socket.recv(msg_head).decode("UTF-8")
     except:
         return False
 
@@ -65,8 +65,8 @@ def send_file(client_socket, file):
         return False
 
 while True:
-    try:
-        client_socket, client_address = serversock.accept()
+    client_socket, client_address = serversock.accept()
+    with client_socket:
         print(f"connection {client_address[0]}:{client_address[1]} established")
         recvd = recv_msg(client_socket).split(' ')
         if recvd[0] == 'FETCH':
@@ -125,5 +125,3 @@ while True:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
                 send_msg(client_socket, "ERROR USR_NOT_FOUND")
-    except:
-        pass
