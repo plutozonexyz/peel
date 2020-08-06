@@ -229,6 +229,3 @@ elif sys.argv[1].lower() == 'keypub':
     keypub(input("Password: "))
 else:
     print("Command not understood.")
-
-
-return 0
