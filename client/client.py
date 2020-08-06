@@ -1,6 +1,6 @@
 import socket
 import pgpy
-from sys import argv
+import sys
 import os
 import tarfile
 import hashlib
@@ -100,7 +100,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     else:
         print("ERROR")
     print("Done!")
-    
+
 
 def keygen():
     print("Generating Keys...")
@@ -152,7 +152,7 @@ def keypub(passphrase):
 
 if len(sys.argv) == 1:
     print("Type the command 'HELP' for a list of commands.")
-elif sys.argv[1].lowercase() == "help":
+elif sys.argv[1].lower() == 'help':
     if len(sys.argv) == 2:
         print(f'''Type 'help [command]' for a list of arugments and what they can do.
 NOTE: For all commands to work you MUST be in the same directory as the client script. Run 'dir' or 'ls' to check this in your system shell.
@@ -166,8 +166,8 @@ COMMAND LIST:
 {'KEYPUB':<10}Run this on the same day that you generated the keys. If the day changes, you will have to manually use your old keys somehow to tell the server that you are yourself.
 {'DECRYPT':<10}Run this along with the filename of the .tar.pgp message archive you wish to decrypt. Do not include the file extension(s).''')
     elif len(sys.argv) == 3:
-        helpsub = sys.argv[2].lowercase()
-        if helpsub == 'help'
+        helpsub = sys.argv[2].lower()
+        if helpsub == 'help':
             print('''SYNTAX:
 HELP 
     [COMMAND] Another command in the script that can be called. This is for explaining it.''')
@@ -201,3 +201,30 @@ DECRYPT
     else:
         print("I don't understand.")
 
+elif sys.argv[1].lower() == 'decrypt':
+    if len(sys.argv) == 3:
+        decrypt_tar(sys.argv[2], input("Password: "))
+    else:
+        print("Please input one message name to decrypt!")
+elif sys.argv[1].lower() == 'fetch':
+    fetch_msgs(input("Password: "))
+elif sys.argv[1].lower() == 'init':
+    init()
+elif sys.argv[1].lower() == 'compose':
+    if len(sys.argv) < 5:
+        print("See 'HELP COMPOSE' for creating a message.")
+    else:
+        attachment = []
+        if len(sys.argv) > 5:
+            for i in sys.argv[]:
+                attachment.append(i)
+        compose_msg(sys.argv[2], sys.argv[3], sys.argv[4], input("Password: "), attachment)
+elif sys.argv[1].lower() == 'keygen':
+    keygen()
+elif sys.argv[1].lower() == 'keypub':
+    keypub(input("Password: "))
+else:
+    print("Command not understood.")
+
+
+return 0
