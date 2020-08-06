@@ -87,29 +87,29 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1_2, ciphers="ALL")
     sock.connect((HOST, 293))
-    key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
-    with key.unlock(passphrase):
-        sig = key.sign(to_addr)
     msg = "GETKEY "+to_addr
     msghead = len(msg)
     sock.send(f"{msghead:<{HEADSIZE}}{msg}")
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
-    pubkey_rec = pgpy.PGPKey()
-    pubkey_rec.parse(sock.recv(recvhead))
-    msg = "SEND "+USRNM, sig
-    msghead = len(msg)
-    sock.send(f"{msghead:<{HEADSIZE}}{msg}")
-    recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
-    recvmsg = sock.recv(recvhead).decode("UTF-8")
-    recvmsgf = recvmsg.split(' ')
-    if recvmsgf[0] == "OK":
-        arc = pubkey_rec.encrypt(open('./tx/dec/'+shatar+'.tar', 'r').read())
-        msghead = len(bytes(arc))
-        sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
-        sock.send(arc)
-    else:
-        print("ERROR")
-    print("Done!")
+    if sock.recv(recvhead).decode("UTF-8") == 'OK':
+        recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
+        pubkey_rec = pgpy.PGPKey()
+        pubkey_rec.parse(sock.recv(recvhead))
+        msg = to_addr
+        msghead = len(msg)
+        sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+        recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
+        recvmsg = sock.recv(recvhead).decode("UTF-8")
+        recvmsgf = recvmsg.split(' ')
+        if recvmsgf[0] == "OK":
+            arc = pubkey_rec.encrypt(open('./tx/dec/'+shatar+'.tar', 'r').read())
+            msghead = len(bytes(arc))
+            sock.send(f'{len(shatar):<{HEADSIZE}}{shatar}')
+            sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+            sock.send(arc)
+        else:
+            print("ERROR")
+        print("Done!")
 
 
 def keygen():

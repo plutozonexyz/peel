@@ -80,31 +80,47 @@ while True:
                 dirlist = os.listdir('./msgs/'+recvd[1])
                 num = len(dirlist)
                 if num == 0:
-                    send_msg('ERROR 1')
+                    send_msg(client_socket, 'ERROR 1')
                 else:
                     send_msg(client_socket, "RECVMSG "+num)
                     for i in num:
                         f = dirlist[i]
                         fr = open(f).read()
-                        msgf = f'{len(msg):<{HEADSIZE}}{f:<{FILENMSIZE}}'
+                        msgf = f'{len(fr):<{HEADSIZE}}{f:<{FILENMSIZE}}'
                         client_socket.send(msgf, "UTF-8")
                         client_socket.send(fr)
         elif recvd[0] == 'KEYPUB':
-            if recvd[1] in os.listdir('./keys'):
+            if recvd[1] in os.listdir('./pubkeys'):
                 dd = date.today()
-                send_msg("VERIFY "+dd)
+                send_msg(client_socket, "VERIFY "+dd)
                 msg_head = int(client_socket.recv(HEADSIZE).decode("UTF-8"))
                 sig = client_socket.recv(HEADSIZE)
                 key,_ = pgpy.PGPKey.from_file('./pubkeys/'+recvd[1])
-                if key.verify(dd, sig):
-                try:
-                    send_msg(client_socket, 'OK')
-                    kf = recv_msg(client_socket)
-                    open('./keys/'+recvd[1]).write(kf)
-                except:
-                    send_msg('ERROR SIG_INVALID')
-        elif recvd[0] == 'GETKEY'
-            if recvd[1] in os.listdir('./keys'):
                 
+                try:
+                    if key.verify(dd, sig):
+                        send_msg(client_socket, 'OK')
+                        kf = recv_msg(client_socket)
+                        open('./pubkeys/'+recvd[1]).write(kf)
+                    else:
+                        send_msg(client_socket, 'ERROR SIG_INVALID')
+                except:
+                    send_msg(client_socket, 'ERROR SIG_INVALID')
+        elif recvd[0] == 'GETKEY':
+            if recvd[1] in os.listdir('./pubkeys'):
+                send_msg(client_socket, 'OK')
+                f = './pubkeys/'
+                fr = open(f).read()
+                msgf = f'{len(fr):<{HEADSIZE}}}'
+                client_socket.send(msgf, "UTF-8")
+                client_socket.send(fr)
+                recvd_two = recv_msg(client_socket).split(' ')
+                if recvd_two[0] in os.listdir('./pubkeys'):
+                    send_msg(client_socket, 'OK')
+                    shatar = recv_msg(client_socket)
+                    f3 = recv_file(client_socket)
+                    open(f'./msgs/{recvd_two[0]}/{shatar}').write(f3)
+                else:
+                    send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
-                send_msg("ERROR USR_NOT_FOUND")
+                send_msg(client_socket, "ERROR USR_NOT_FOUND")
