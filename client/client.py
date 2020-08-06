@@ -33,6 +33,8 @@ def init():
     os.mkdir('./rx/dec')
     os.mkdir('./tx/enc')
     os.mkdir('./tx/dec')
+    os.mkdir('./keys')
+    os.mkdir('./keys/mine')
     print("Directories created!")
 
 def fetch_msgs(passphrase):
