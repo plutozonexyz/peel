@@ -65,6 +65,7 @@ def send_file(client_socket, file):
         return False
 
 while True:
+    try:
         client_socket, client_address = serversock.accept()
         print(f"connection {client_address[0]}:{client_address[1]} established")
         recvd = recv_msg(client_socket).split(' ')
@@ -124,3 +125,5 @@ while True:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
                 send_msg(client_socket, "ERROR USR_NOT_FOUND")
+    catch:
+	return 0
