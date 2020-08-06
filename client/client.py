@@ -43,7 +43,7 @@ def fetch_msgs(passphrase):
     sock.connect((HOST, 2930))
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     with key.unlock(passphrase):
-        sig = key.sign("MSGS")
+        sig = str(key.sign("MSGS"))
     msg = "FETCH "+USRNM
     msghead = len(msg)
     sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}", "UTF-8"))
@@ -146,7 +146,7 @@ def keypub(passphrase):
     recvmsgf = recvmsg.split(' ')
     if recvmsgf[0] == "VERIFY":
         with key.unlock(passphrase):
-            sig = key.sign(recvmsgf[1]) 
+            sig = str(key.sign(recvmsgf[1]))
         msghead = len(sig)
         sock.send(bytes(f"{msghead:<{HEADSIZE}}", "UTF-8"))
         sock.send(bytes(sig, "UTF-8"))

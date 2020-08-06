@@ -68,7 +68,10 @@ while True:
     client_socket, client_address = serversock.accept()
     with client_socket:
         print(f"connection {client_address[0]}:{client_address[1]} established")
-        recvd = recv_msg(client_socket).split(' ')
+        try:
+            recvd = recv_msg(client_socket).split(' ')
+        except:
+            client_socket.close()
         if recvd[0] == 'FETCH':
             print("Fetching messages for "+recvd[1]+"...")
             key,_ = pgpy.PGPKey.from_file('./pubkeys/'+recvd[1])
