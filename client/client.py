@@ -216,7 +216,7 @@ elif sys.argv[1].lower() == 'compose':
     else:
         attachment = []
         if len(sys.argv) > 5:
-            for i in sys.argv[]:
+            for i in attachment:
                 attachment.append(i)
         compose_msg(sys.argv[2], sys.argv[3], sys.argv[4], input("Password: "), attachment)
 elif sys.argv[1].lower() == 'keygen':
