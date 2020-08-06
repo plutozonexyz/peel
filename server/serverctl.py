@@ -20,4 +20,12 @@ elif sys.argv[1].upper() == 'RMUSR':
         print("Please specify one user.")
 elif sys.argv[1].upper() == 'ADDUSR':
     if len(sys.argv) == 3:
-        
+        key = pgpy.PGPKey.from_file(sys.argv[2])
+        uname = pgpy.PGPUID.name(key.userids)
+        if ' ' in uname:
+            print("No spaces allowed inside usernames!")
+        else:
+            open('./pubkeys/'+uname).write(bytes(key))
+            print("Added user!")
+    else:
+        print("Please specify one public key.")

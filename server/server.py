@@ -41,4 +41,6 @@ while True:
         client_socket, client_address = serversock.accept()
         print(f"connection {client_address[0]}:{client_address[1]} established")
         recvd = recv_msg(client_socket).split(' ')
-        if recvd[0] = 'FETCH'
+        if recvd[0] == 'FETCH':
+            print("Fetching messages for "+recvd[1]+"...")
+            
