@@ -23,7 +23,7 @@ elif sys.argv[1].upper() == 'ADDUSR':
     if len(sys.argv) == 4:
         key = pgpy.PGPKey.from_file(sys.argv[2])
 #        usrname = pgpy.PGPUID.name(key.userids)
-	usrname = sys.argv[3]
+        usrname = sys.argv[3]
         if ' ' in usrname:
             print("No spaces allowed inside usernames!")
         else:
