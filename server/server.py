@@ -111,7 +111,7 @@ while True:
                 send_msg(client_socket, 'OK')
                 f = './pubkeys/'
                 fr = open(f, 'r').read()
-                msgf = f'{len(fr):<{HEADSIZE}}}'
+                msgf = f'{len(fr):<{HEADSIZE}}'
                 client_socket.send(bytes(msgf, "UTF-8"))
                 client_socket.send(bytes(fr, UTF-8))
                 recvd_two = recv_msg(client_socket).split(' ')
