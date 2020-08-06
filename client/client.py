@@ -123,7 +123,7 @@ def keygen():
         ciphers=[SymmetricKeyAlgorithm.AES256, SymmetricKeyAlgorithm.AES192, SymmetricKeyAlgorithm.AES128],
         compression=[CompressionAlgorithm.ZLIB, CompressionAlgorithm.BZ2, CompressionAlgorithm.ZIP, CompressionAlgorithm.Uncompressed],
         key_expired=timedelta(days=32))
-    key.protect(input("Password for new private key: "), SymmetricKeyAlgorithm, HashAlgorithm)
+    key.protect(input("Password for new private key: "), SymmetricKeyAlgorithm.AES128, HashAlgorithm.SHA256)
     if os.path.exists('./keys/mine/private.key'):
         os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
     if os.path.exists('./keys/mine/public.key'):
