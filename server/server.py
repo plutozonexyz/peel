@@ -125,5 +125,5 @@ while True:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
                 send_msg(client_socket, "ERROR USR_NOT_FOUND")
-    catch:
+    except:
 	return 0
