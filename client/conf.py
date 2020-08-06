@@ -1,2 +1,2 @@
-USRNM = 'someone@example.net'
+USRNM = 'someone'
 HOST = 'example.net'

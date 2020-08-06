@@ -20,7 +20,10 @@ def decrypt_tar(enfile, passphrase):
         os.mkdir('./rx/dec/'+enfile)
         os.write('./rx/dec/'+enfile+'.tar', str(key.decrypt(enc_tar)))
         tarfile.open('./rx/dec/'+enfile+'.tar', 'r').extractall('./rx/dec/'+enfile)
+        os.remove('./rx/enc/'+enfile+'.tar.pgp')
+        os.remove('./rx/dec/'+enfile+'.tar')
     print(f"Success in decrypting message {enfile}!")
+
 
 
 def init():
@@ -63,7 +66,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     shatar = hashlib.sha256(subject).hexdigest()
     f = open(body_file, 'r')
     f2 = open('./tx/dec/'+shatar+'/msg.txt', 'w')
-    f2.write("SUBJECT: "+subject+"\nFROM: "+USRNM+"\nTO: "+to_addr+"\n\n\n"+f.read())
+    f2.write("SUBJECT: "+subject+"\nFROM: "+USRNM+"@"+HOST+"\nTO: "+to_addr+"\n\n\n"+f.read())
     f2.close()
     f.close()
 
