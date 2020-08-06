@@ -42,9 +42,11 @@ def fetch_msgs(passphrase):
     key,_ = pgpy.PGPKey.from_file('./keys/mine/private.key')
     with key.unlock(passphrase):
         sig = key.sign("MSGS")
-    msg = "FETCH "+USRNM, sig
+    msg = "FETCH "+USRNM
     msghead = len(msg)
-    sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+    sock.send(f"{msghead:<{HEADSIZE}}{msg}", "UTF-8")
+    sock.send(f"{len(sig):<{HEADSIZE}}", "UTF-8")
+    sock.send(sig)
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     recvmsg = sock.recv(recvhead).decode("UTF-8")
     recvmsgf = recvmsg.split(' ')
@@ -59,7 +61,7 @@ def fetch_msgs(passphrase):
             recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
             recvfilenm = sock.recv(FILENMSIZE).decode("UTF-8").strip([' ', '\n'])
             os.write('./rx/enc/'+recvfilenm+'.tar.pgp', sock.recv(recvhead))
-            print(f"MSG: {recvfilenm}")
+            print(f"[{i}] MSG: {recvfilenm}")
         print("Done!")
 
 def compose_msg(body_file, to_addr, subject, passphrase, attachment):
@@ -101,8 +103,10 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     recvmsg = sock.recv(recvhead).decode("UTF-8")
     recvmsgf = recvmsg.split(' ')
     if recvmsgf[0] == "OK":
-        msghead = len(bytes())
-        sock.send(f"{msghead:<{HEADSIZE}}"+pubkey_rec.encrypt(open('./tx/dec/'+shatar+'.tar', 'r').read()))
+        arc = pubkey_rec.encrypt(open('./tx/dec/'+shatar+'.tar', 'r').read())
+        msghead = len(bytes(arc))
+        sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+        sock.send(arc)
     else:
         print("ERROR")
     print("Done!")
@@ -223,7 +227,7 @@ elif sys.argv[1].lower() == 'compose':
     else:
         attachment = []
         if len(sys.argv) > 5:
-            for i in attachment:
+            for i in range(len(sys.argv) - 5):
                 attachment.append(i)
         compose_msg(sys.argv[2], sys.argv[3], sys.argv[4], input("Password: "), attachment)
 elif sys.argv[1].lower() == 'keygen':
