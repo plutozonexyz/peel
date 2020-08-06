@@ -46,8 +46,8 @@ def fetch_msgs(passphrase):
         sig = key.sign("MSGS")
     msg = "FETCH "+USRNM
     msghead = len(msg)
-    sock.send(f"{msghead:<{HEADSIZE}}{msg}", "UTF-8")
-    sock.send(f"{len(sig):<{HEADSIZE}}", "UTF-8")
+    sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}", "UTF-8"))
+    sock.send(bytes(f"{len(sig):<{HEADSIZE}}", "UTF-8"))
     sock.send(sig)
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     recvmsg = sock.recv(recvhead).decode("UTF-8")
@@ -90,7 +90,7 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
     sock.connect((HOST, 293))
     msg = "GETKEY "+to_addr
     msghead = len(msg)
-    sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+    sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}"))
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     if sock.recv(recvhead).decode("UTF-8") == 'OK':
         recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
@@ -98,15 +98,15 @@ def compose_msg(body_file, to_addr, subject, passphrase, attachment):
         pubkey_rec.parse(sock.recv(recvhead))
         msg = to_addr
         msghead = len(msg)
-        sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+        sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}"))
         recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
         recvmsg = sock.recv(recvhead).decode("UTF-8")
         recvmsgf = recvmsg.split(' ')
         if recvmsgf[0] == "OK":
             arc = pubkey_rec.encrypt(open('./tx/dec/'+shatar+'.tar', 'r').read())
             msghead = len(bytes(arc))
-            sock.send(f'{len(shatar):<{HEADSIZE}}{shatar}')
-            sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+            sock.send(bytes(f'{len(shatar):<{HEADSIZE}}{shatar}', "UTF-8"))
+            sock.send(bytes(f"{msghead:<{HEADSIZE}}", "UTF-8"))
             sock.send(arc)
         else:
             print("ERROR")
@@ -127,8 +127,8 @@ def keygen():
         os.rename('./keys/mine/private.key' './keys/mine/private'+date.today()+'.key')
     if os.path.exists('./keys/mine/public.key'):
         os.rename('./keys/mine/public.key' './keys/mine/public'+date.today()+'.key')
-    open('./keys/mine/private.key', 'w+').write(bytes(key))
-    open('./keys/mine/public.key', 'w+').write(bytes(key.pubkey))
+    open('./keys/mine/private.key', 'w+').write(str(key))
+    open('./keys/mine/public.key', 'w+').write(str(key.pubkey))
     print("Done!\nKey Expires in: 32 days\nDon't forget to run the 'keypub' command to publish your keys to the server!\nNOTE: On your first key creation, you must contact the server admin to manually publish your key.")
 
 
@@ -140,7 +140,7 @@ def keypub(passphrase):
     sock.connect((HOST, 293))
     msg = "KEYPUB "+USRNM, 
     msghead = len(msg)
-    sock.send(f"{msghead:<{HEADSIZE}}{msg}")
+    sock.send(bytes(f"{msghead:<{HEADSIZE}}{msg}"))
     recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
     recvmsg = sock.recv(recvhead).decode("UTF-8")
     recvmsgf = recvmsg.split(' ')
@@ -148,7 +148,7 @@ def keypub(passphrase):
         with key.unlock(passphrase):
             sig = key.sign(recvmsgf[1]) 
         msghead = len(sig)
-        sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
+        sock.send(bytes(f"{msghead:<{HEADSIZE}}", "UTF-8"))
         sock.send(sig)
         recvhead = int(sock.recv(HEADSIZE).decode("UTF-8"))
         recvmsg = sock.recv(recvhead).decode("UTF-8")
@@ -156,8 +156,8 @@ def keypub(passphrase):
         if recvmsgf[0] == "OK":
             msg = open('./keys/mine/public.key', 'r').read() 
             msghead = len(msg)
-            sock.send(f"{msghead:<{HEADSIZE}}", "UTF-8")
-            sock.send(msg)
+            sock.send(bytes(f"{msghead:<{HEADSIZE}}", "UTF-8"))
+            sock.send(bytes(msg))
             print("Keys published!")
     else:
         print("ERROR")
