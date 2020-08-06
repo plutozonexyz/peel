@@ -5,7 +5,7 @@ import os
 if len(sys.argv) == 1:
     print('''COMMANDS:
 INIT
-ADDUSR <PUBLIC_KEY_FILE_PATH (IN QUOTES)>
+ADDUSR <PUBLIC_KEY_FILE_PATH (IN QUOTES)> <USERNAME>
 RMUSR <USERNAME>
 ''')
 elif sys.argv[1].upper() == 'INIT':
@@ -20,9 +20,10 @@ elif sys.argv[1].upper() == 'RMUSR':
     else:
         print("Please specify one user.")
 elif sys.argv[1].upper() == 'ADDUSR':
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 4:
         key = pgpy.PGPKey.from_file(sys.argv[2])
-        usrname = pgpy.PGPUID.name(key.userids)
+#        usrname = pgpy.PGPUID.name(key.userids)
+	usrname = sys.argv[3]
         if ' ' in usrname:
             print("No spaces allowed inside usernames!")
         else:
