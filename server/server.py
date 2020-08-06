@@ -126,4 +126,4 @@ while True:
             else:
                 send_msg(client_socket, "ERROR USR_NOT_FOUND")
     except:
-        break
+        pass
