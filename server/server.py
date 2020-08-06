@@ -16,7 +16,7 @@ serversock = ssl.wrap_socket(sock, certfile=cert_location, keyfile=key_location,
 serversock.bind(('', CCOMMPORT))
 serversock.listen()
 print(f'listening on *:{CCOMMPORT}')
-serversock.setblocking(False)
+# serversock.setblocking(False)
 
 
 # while True:
@@ -125,3 +125,4 @@ while True:
                     send_msg(client_socket, "ERROR USR_NOT_FOUND")
             else:
                 send_msg(client_socket, "ERROR USR_NOT_FOUND")
+        client_socket.close()
